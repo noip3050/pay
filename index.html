@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>محفظتي الرقمية</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>محفظتي الرقمية</h1>
+  </header>
+
+  <main>
+    <!-- الصفحة الرئيسية للمحفظة -->
+    <section class="wallet-section" id="wallet-section">
+      <h2>الرصيد الحالي</h2>
+      <p class="balance">500.00 <span>ريال</span></p>
+      <div class="wallet-options">
+        <button onclick="showSection('transfer-section')">تحويل الأموال</button>
+        <button onclick="showSection('create-invoice-section')">إنشاء فاتورة</button>
+        <button onclick="showSection('pay-invoice-section')">دفع فاتورة</button>
+      </div>
+    </section>
+
+    <!-- قسم دفع الفاتورة -->
+    <section class="pay-invoice-section" id="pay-invoice-section" style="display: none;">
+      <h2>دفع فاتورة</h2>
+      <form id="pay-invoice-form">
+        <label for="invoice-number">رقم الفاتورة:</label>
+        <input type="text" id="invoice-number" placeholder="أدخل رقم الفاتورة" required>
+        
+        <button type="button" class="next-btn" onclick="showPaymentDetails()">التالي</button>
+      </form>
+      <button class="back-btn" onclick="showSection('wallet-section')">رجوع</button>
+    </section>
+
+    <!-- قسم عرض تفاصيل الدفع -->
+    <section class="payment-details" id="payment-details" style="display: none;">
+      <h2>تفاصيل الدفع</h2>
+      <img src="https://cdn.salla.sa/VqaNDx/mrbKnXzoZWKbjVVWImjeCXaaPgaVQJ08594i9jEQ.jpg" alt="صورة الدفع" style="max-width: 100%; height: auto;">
+      <button class="pay-btn" onclick="payInvoice()">دفع الفاتورة</button>
+      <button class="back-btn" onclick="showSection('pay-invoice-section')">رجوع</button>
+    </section>
+
+    <!-- قسم تحويل الأموال -->
+    <section class="transfer-section" id="transfer-section" style="display: none;">
+      <h2>تحويل الأموال</h2>
+      <button class="transfer-btn" onclick="showBankTransfer()">تحويل إلى حساب بنكي</button>
+      <button class="transfer-btn" onclick="showWalletTransfer()">تحويل إلى محفظة أخرى</button>
+      <button class="back-btn" onclick="showSection('wallet-section')">رجوع</button>
+    </section>
+
+    <!-- قسم إنشاء فاتورة -->
+    <section class="create-invoice-section" id="create-invoice-section" style="display: none;">
+      <h2>إنشاء فاتورة</h2>
+      <form id="invoice-form">
+        <label for="client-name">اسم الشخص:</label>
+        <input type="text" id="client-name" placeholder="أدخل اسم الشخص" required>
+
+        <label for="item-type">نوع السلعة:</label>
+        <input type="text" id="item-type" placeholder="أدخل نوع السلعة" required>
+
+        <label for="price">السعر:</label>
+        <input type="number" id="price" placeholder="أدخل السعر بالريال" required>
+
+        <button type="button" class="create-btn" onclick="createInvoice()">إنشاء</button>
+      </form>
+      <button class="back-btn" onclick="showSection('wallet-section')">رجوع</button>
+    </section>
+
+    <!-- قسم عرض الفاتورة -->
+    <section class="invoice-result" id="invoice-result" style="display: none;">
+      <h2>تم إنشاء الفاتورة بنجاح!</h2>
+      <p id="invoice-number-result">رقم الفاتورة: #12345</p>
+      <button class="copy-btn" onclick="copyInvoice()">نسخ الفاتورة</button>
+      <button class="send-btn" onclick="sendInvoice()">إرسال الفاتورة إلى رقم هاتف</button>
+      <button class="back-btn" onclick="showSection('wallet-section')">رجوع</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>جميع الحقوق محفوظة © 2024</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    function showSection(sectionId) {
+      // إخفاء جميع الأقسام
+      document.querySelectorAll("main section").forEach(section => {
+        section.style.display = "none";
+      });
+      // عرض القسم المطلوب
+      document.getElementById(sectionId).style.display = "block";
+    }
+
+    function createInvoice() {
+      const clientName = document.getElementById("client-name").value;
+      const itemType = document.getElementById("item-type").value;
+      const price = document.getElementById("price").value;
+
+      if (clientName && itemType && price) {
+        // إظهار قسم الفاتورة
+        showSection('invoice-result');
+
+        // إنشاء رقم فاتورة عشوائي
+        const invoiceNumber = `#${Math.floor(10000 + Math.random() * 90000)}`;
+        document.getElementById("invoice-number-result").textContent = `رقم الفاتورة: ${invoiceNumber}`;
+      } else {
+        alert("يرجى ملء جميع الحقول.");
+      }
+    }
+
+    function copyInvoice() {
+      const invoiceText = document.getElementById("invoice-number-result").textContent;
+      navigator.clipboard.writeText(invoiceText)
+        .then(() => alert("تم نسخ رقم الفاتورة!"))
+        .catch(() => alert("حدث خطأ أثناء النسخ."));
+    }
+
+    function sendInvoice() {
+      const phoneNumber = prompt("أدخل رقم الهاتف:");
+      if (phoneNumber) {
+        alert(`تم إرسال الفاتورة إلى الرقم: ${phoneNumber}`);
+      }
+    }
+
+    function payInvoice() {
+      alert("تم دفع الفاتورة بنجاح!");
+    }
+
+    function showPaymentDetails() {
+      const invoiceNumber = document.getElementById("invoice-number").value;
+
+      if (invoiceNumber) {
+        // إخفاء صفحة إدخال رقم الفاتورة
+        document.getElementById('pay-invoice-section').style.display = 'none';
+        // إظهار صفحة تفاصيل الدفع
+        document.getElementById('payment-details').style.display = 'block';
+      } else {
+        alert("يرجى إدخال رقم الفاتورة.");
+      }
+    }
+  </script>
+</body>
+</html>
